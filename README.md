@@ -1,7 +1,7 @@
 # pjmage
 PJMage - easy C/C++ build/export system
----------------------------------------------------------------------
-Installation logic:
+
+## Installation logic:
 
 During PJMage installer (We will have Windows, Linux and macOS installers)
 - Install the correct compiler (OS dependent)
