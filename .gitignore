@@ -42,3 +42,6 @@
 
 # VS Code Folder
 /.vscode
+
+# Bin Folder
+/bin
