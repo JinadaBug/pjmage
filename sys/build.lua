@@ -4,12 +4,6 @@ local sys_path = EXE_PATH .. "/sys/"
 -- Execution Result
 local success, result
 
--- Clear Phase
-success, result = pcall(dofile, sys_path .. "clear.lua")
-if not success then
-    error("[PJMage][Error] Build Aborted: " .. result)
-end
-
 -- Refresh Phase
 success, result = pcall(dofile, sys_path .. "refresh.lua")
 if not success then

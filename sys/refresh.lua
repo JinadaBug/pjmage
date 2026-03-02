@@ -4,7 +4,7 @@ local function create_link(link_path, target_path)
     if SYS_NAME == "WINDOWS" then
         local win_link = link_path:gsub("/", "\\")
         local win_target = target_path:gsub("/", "\\")
-        local cmd = string.format('mklink /J "%s" "%s"', win_link, win_target)
+        local cmd = string.format('mklink /J "%s" "%s" >nul', win_link, win_target)
         local result = os.execute(cmd)
         if not result then error("[PJMage][Error] Junction Creation Failure") end
     else
@@ -17,7 +17,7 @@ end
 local function remove_link(path)
     if SYS_NAME == "WINDOWS" then
         local win_path = path:gsub("/", "\\")
-        local cmd = string.format('if exist "%s" rmdir "%s" /Q /S', win_path, win_path)
+        local cmd = string.format('if exist "%s" rmdir "%s" /Q /S >nul', win_path, win_path)
         local result = os.execute(cmd)
         if not result then error("[PJMage][Error] Junction Deletion Failure") end
     else

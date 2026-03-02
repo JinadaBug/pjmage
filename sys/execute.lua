@@ -18,7 +18,7 @@ local cmd_line = ""
 if SYS_NAME == "WINDOWS" then
     local win_bin = string.gsub(sys.bin_path, "/", "\\")
     local win_env = string.gsub(env_line, "/", "\\")
-    cmd_line = string.format('set %s="%s" && cd /d "%s" && "%s"', sys.path_var, win_env, win_bin, sys.exe_name)
+    cmd_line = string.format('set %s="%s" && cd /d "%s" && "%s" >nul', sys.path_var, win_env, win_bin, sys.exe_name)
 else
     cmd_line = string.format('export %s="%s" && cd "%s" && ./%s', sys.path_var, env_line, sys.bin_path, sys.exe_name)
 end

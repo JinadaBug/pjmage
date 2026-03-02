@@ -13,7 +13,7 @@ for _, folder in ipairs(targets) do
     local cmd_line = ""
     if SYS_NAME == "WINDOWS" then
         local win_path = folder:gsub("/", "\\")
-        cmd_line = string.format('if exist "%s" rmdir "%s" /Q /S', win_path, win_path)
+        cmd_line = string.format('if exist "%s" rmdir "%s" /Q /S >nul', win_path, win_path)
     else
         cmd_line = string.format('rm -rf "%s"', folder)
     end
