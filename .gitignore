@@ -43,5 +43,5 @@
 # VS Code Folder
 /.vscode
 
-# Bin Folder
-/bin
+# Out Folder
+/out

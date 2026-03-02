@@ -5,11 +5,12 @@
 
 #include <map>
 #include <thread>
+#include <chrono>
 #include <future>
 #include <vector>
 #include <atomic>
 #include <semaphore>
-#include <lua/lua.hpp>
+#include "lua/lua.hpp"
 
 #if defined(_WIN32)
     #include <windows.h>

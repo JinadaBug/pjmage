@@ -34,8 +34,9 @@ sys.ensure_dir(sys.lib_virt)
 sys.ensure_dir(sys.dll_virt)
 
 for name, vers in pairs(sys.bricks) do
+    local package =  name .. sys.separator .. vers
     local data = sys.stored[name] and sys.stored[name][vers]
-    if data and data.inc then create_link(sys.inc_virt .. "/" .. name, sys.inc_path .. "/" .. package) end
+    if data and data.inc then create_link(sys.inc_virt .. "/" .. name, sys.inc_path .. "/" .. package .. "/" .. name) end
     if data and data.lib then create_link(sys.lib_virt .. "/" .. name, sys.lib_path .. "/" .. package) end
     if data and data.dll then create_link(sys.dll_virt .. "/" .. name, sys.dll_path .. "/" .. package) end
 end

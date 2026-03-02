@@ -37,7 +37,7 @@ local basic_exe = (SYS_NAME == "WINDOWS" and "msvc") or (SYS_NAME == "LINUX" and
 
 local config = load(tgt_path .. "/.pjmage/config.lua")
 local bricks = load(tgt_path .. "/.pjmage/bricks.lua")
-local stored = load(tgt_path .. "/.pjmage/stored.lua")
+local stored = load(EXE_PATH .. "/add/stored.lua")
 
 local cfg_gui = make_bool(config.desktop)
 local cfg_rel = make_bool(config.release)
@@ -102,7 +102,6 @@ local txt_path = EXE_PATH .. "/out/txt/" .. project
 local inc_list = txt_path .. "/inc.txt"
 local obj_list = txt_path .. "/obj.txt"
 local lib_list = txt_path .. "/lib.txt"
-local dll_list = txt_path .. "/dll.txt"
 
 local src_tail = language == "c++" and ".cpp" or ".c"
 local obj_tail = SYS_NAME == "WINDOWS" and ".obj" or ".o"
@@ -270,7 +269,6 @@ return {
     lib_virt = lib_virt,
 
     dll_path = dll_path,
-    dll_list = dll_list,
     dll_virt = dll_virt,
 
     obj_path = obj_path,

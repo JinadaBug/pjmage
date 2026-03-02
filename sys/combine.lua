@@ -1,6 +1,7 @@
 local sys = require("system")
 
 sys.ensure_dir(sys.bin_path)
+sys.ensure_dir(sys.txt_path)
 
 local line = ""
 line = line .. sys.link_flags.exe
@@ -13,12 +14,8 @@ local libraries = {}
 for name, vers in pairs(sys.bricks) do
     local data = sys.stored[name] and sys.stored[name][vers]
     if data and data.lib then
-        table.insert(libraries, { name = name .. sys.separator .. vers, file = data.lib })
+        table.insert(libraries, '"' .. sys.lib_path .. "/" .. name .. sys.separator .. vers .. "/" .. data.lib .. '"')
     end
-end
-
-for _, library in ipairs(libraries) do
-    line = line .. '"' .. sys.lib_path .. "/" .. library.name .. "/" .. library.file .. '" '
 end
 
 local file
