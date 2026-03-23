@@ -29,6 +29,7 @@ local function pick(arg, cfg, default)
     return default
 end
 
+local valid_ide = { ["vscode"] = true } -- will expand in the future
 local valid_c   = { ["23"] = true, ["18"] = true, ["11"] = true, ["99"] = true } -- 18 preferred
 local valid_cpp = { ["23"] = true, ["20"] = true, ["17"] = true, ["11"] = true } -- 20 preferred
 local valid_exe = { ["msvc"] = true, ["gnu"] = true, ["clang"] = true }
@@ -42,18 +43,23 @@ local stored = load(EXE_PATH .. "/add/stored.lua")
 local cfg_gui = make_bool(config.desktop)
 local cfg_rel = make_bool(config.release)
 local cfg_opt = make_bool(config.optimal)
-local cfg_lan = type(config.language) == "string"  and config.language:lower() or "c++"
-local cfg_std = type(config.standard) == "string"  and config.standard:lower() or "20"
-local cfg_wrn = type(config.warnings) == "string"  and config.warnings:lower() or "strict"
-local cfg_exe = type(config.compiler) == "string"  and config.compiler:lower() or basic_exe
+local cfg_lan = type(config.language) == "string" and config.language:lower() or "c++"
+local cfg_std = type(config.standard) == "string" and config.standard:lower() or "20"
+local cfg_wrn = type(config.warnings) == "string" and config.warnings:lower() or "strict"
+local cfg_exe = type(config.compiler) == "string" and config.compiler:lower() or basic_exe
 
 local arg_gui = make_bool(ARGV.desktop)
 local arg_rel = make_bool(ARGV.release)
 local arg_opt = make_bool(ARGV.optimal)
+local arg_ide = type(ARGV.editor)   == "string" and string.lower(ARGV.editor)   or nil
 local arg_lan = type(ARGV.language) == "string" and string.lower(ARGV.language) or nil
 local arg_std = type(ARGV.standard) == "string" and string.lower(ARGV.standard) or nil
 local arg_wrn = type(ARGV.warnings) == "string" and string.lower(ARGV.warnings) or nil
 local arg_exe = type(ARGV.compiler) == "string" and string.lower(ARGV.compiler) or nil
+
+local editor =
+    (valid_ide[arg_ide] and arg_ide) or
+    "none"
 
 local compiler =
     (valid_exe[arg_exe] and arg_exe) or
@@ -240,9 +246,10 @@ return {
     stored  = stored,
     project = project,
 
-    release = release,
-    optimal = optimal,
-    desktop = desktop,
+    editor   = editor,
+    release  = release,
+    optimal  = optimal,
+    desktop  = desktop,
     warnings = warnings,
     compiler = compiler,
     language = language,

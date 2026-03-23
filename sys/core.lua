@@ -15,6 +15,7 @@ return {
     keys = {
         "pjpath::",
         "expath::",
+        "editor::",
         "desktop::",
         "release::",
         "optimize::",
@@ -61,6 +62,7 @@ help    --- Display this help message
 
 pjpath    ---  Custom target directory               (default: CWD)
 expath    ---  Custom export directory               (default: CWD/out)
+editor    ---  Custom editor choice                  (default: vscode)
 desktop   ---  Custom target between console and GUI (default: console)
 release   ---  Custom release/debug level            (default: debug)
 optimize  ---  Custom optimization level             (default: none)
