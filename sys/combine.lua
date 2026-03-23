@@ -4,11 +4,24 @@ sys.ensure_dir(sys.bin_path)
 sys.ensure_dir(sys.txt_path)
 
 local line = ""
-line = line .. sys.link_flags.exe
-line = line .. sys.link_flags.mod
-line = line .. sys.link_flags.out .. '"' .. sys.bin_path .. "/" .. sys.exe_name .. '" '
-line = line .. '@"' .. sys.obj_list .. '" '
-line = line .. '@"' .. sys.lib_list .. '"'
+if sys.product == "program" then
+    line = line .. sys.link_flags.exe
+    line = line .. sys.link_flags.mod
+    line = line .. sys.link_flags.out .. '"' .. sys.bin_path .. "/" .. sys.exe_name .. '" '
+    line = line .. '@"' .. sys.obj_list .. '" '
+    line = line .. '@"' .. sys.lib_list .. '"'
+elseif sys.product == "dynamic" then
+    line = line .. sys.link_flags.exe
+    line = line .. sys.link_flags.mod
+    line = line .. sys.link_flags.out .. '"' .. sys.bin_path .. "/" .. sys.dll_name .. '" '
+    line = line .. '@"' .. sys.obj_list .. '" '
+    line = line .. '@"' .. sys.lib_list .. '"'
+elseif sys.product == "static" then
+    line = line .. sys.arch_flags.exe
+    line = line .. sys.arch_flags.out .. '"' .. sys.bin_path .. "/" .. sys.lib_name .. '" '
+    line = line .. '@"' .. sys.obj_list .. '" '
+    line = line .. '@"' .. sys.lib_list .. '"'
+end
 
 local libraries = {}
 for name, vers in pairs(sys.bricks) do

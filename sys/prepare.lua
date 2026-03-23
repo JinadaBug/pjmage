@@ -20,6 +20,7 @@ return {
     compiler = "]] .. sys.compiler .. [[",
 
     -- Compilation Settings
+    product  = "]] .. sys.product .. [[", -- options: "program", "static", "dynamic"
     desktop  = ]] .. tostring(sys.desktop) .. [[,
     release  = ]] .. tostring(sys.release) .. [[,
     optimal  = ]] .. tostring(sys.optimal) .. [[,
@@ -199,7 +200,7 @@ endlocal]])
         {
             "label": "Execute Project",
             "type": "shell",
-            "command": "${workspaceFolder}/out/]] .. sys.exe_name .. [["
+            "command": "mage execute external::true"
         },
 
         {

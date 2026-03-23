@@ -18,11 +18,13 @@ return {
         "editor::",
         "desktop::",
         "release::",
+        "product::",
         "optimize::",
         "warnings::",
         "compiler::",
         "language::",
         "standard::",
+        "external::"
     },
 
     help = [[
@@ -63,12 +65,14 @@ help    --- Display this help message
 pjpath    ---  Custom target directory               (default: CWD)
 expath    ---  Custom export directory               (default: CWD/out)
 editor    ---  Custom editor choice                  (default: vscode)
-desktop   ---  Custom target between console and GUI (default: console)
-release   ---  Custom release/debug level            (default: debug)
-optimize  ---  Custom optimization level             (default: none)
+product   ---  Custom output type                    (default: program)
+desktop   ---  Custom target between console and GUI (default: false)
+release   ---  Custom release/debug level            (default: false)
+optimize  ---  Custom optimization level             (default: false)
 warnings  ---  Custom warnings level                 (default: strict)
 language  ---  Custom project language               (default: C++)
 standard  ---  Custom project standard               (default: C++20/C18)
+external  ---  Custom external execution flag        (default: false)
 
 ---------------------------------------
 

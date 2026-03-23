@@ -3,6 +3,11 @@ if type(ARGV.data) == "string" and ARGV.data ~= "" then
     tgt_path = CWD_PATH .. "/" .. ARGV.data
 end
 
+local project = tgt_path:match("[^/\\]+$")
+if project:find(" ") then
+    error("[PJMage][Error] Invalid Project Name: '" .. project .. "' has spaces")
+end
+
 local exp_path = tgt_path .. "/out"
 if type(ARGV.expath) == "string" and ARGV.expath ~= "" then
     if ARGV.expath:match("^/") or ARGV.expath:match("^%a:") then
@@ -18,8 +23,8 @@ local function load(path)
 end
 
 local function make_bool(val)
-    if val == "true"  or val == "1" or val == true  then return true end
-    if val == "false" or val == "0" or val == false then return false end
+    if val == "true"  or val == true  then return true end
+    if val == "false" or val == false then return false end
     return nil
 end
 
@@ -30,7 +35,8 @@ local function pick(arg, cfg, default)
 end
 
 local valid_ide = { ["vscode"] = true } -- will expand in the future
-local valid_c   = { ["23"] = true, ["18"] = true, ["11"] = true, ["99"] = true } -- 18 preferred
+local valid_out = { ["program"] = true, ["static"] = true, ["dynamic"] = true, }
+local valid_c   = { ["23"] = true, ["17"] = true, ["11"] = true, ["99"] = true } -- 17 preferred
 local valid_cpp = { ["23"] = true, ["20"] = true, ["17"] = true, ["11"] = true } -- 20 preferred
 local valid_exe = { ["msvc"] = true, ["gnu"] = true, ["clang"] = true }
 local valid_wrn = { ["none"] = true, ["default"] = true, ["strict"] = true }
@@ -43,6 +49,7 @@ local stored = load(EXE_PATH .. "/add/stored.lua")
 local cfg_gui = make_bool(config.desktop)
 local cfg_rel = make_bool(config.release)
 local cfg_opt = make_bool(config.optimal)
+local cfg_out = type(config.product)  == "string" and config.product:lower()  or "program"
 local cfg_lan = type(config.language) == "string" and config.language:lower() or "c++"
 local cfg_std = type(config.standard) == "string" and config.standard:lower() or "20"
 local cfg_wrn = type(config.warnings) == "string" and config.warnings:lower() or "strict"
@@ -51,6 +58,8 @@ local cfg_exe = type(config.compiler) == "string" and config.compiler:lower() or
 local arg_gui = make_bool(ARGV.desktop)
 local arg_rel = make_bool(ARGV.release)
 local arg_opt = make_bool(ARGV.optimal)
+local arg_ext = make_bool(ARGV.external)
+local arg_out = type(ARGV.product)  == "string" and string.lower(ARGV.product)  or nil
 local arg_ide = type(ARGV.editor)   == "string" and string.lower(ARGV.editor)   or nil
 local arg_lan = type(ARGV.language) == "string" and string.lower(ARGV.language) or nil
 local arg_std = type(ARGV.standard) == "string" and string.lower(ARGV.standard) or nil
@@ -60,6 +69,11 @@ local arg_exe = type(ARGV.compiler) == "string" and string.lower(ARGV.compiler) 
 local editor =
     (valid_ide[arg_ide] and arg_ide) or
     "none"
+
+local product =
+    (valid_out[arg_out] and arg_out) or
+    (valid_out[cfg_out] and cfg_out) or
+    "program"
 
 local compiler =
     (valid_exe[arg_exe] and arg_exe) or
@@ -82,13 +96,13 @@ local std_lang = language .. standard
 local desktop = pick(arg_gui, cfg_gui, false)
 local release = pick(arg_rel, cfg_rel, false)
 local optimal = pick(arg_opt, cfg_opt, false)
+local external = pick(arg_ext, false, false)
 
 local warnings =
     (valid_wrn[arg_wrn] and arg_wrn) or
     (valid_wrn[cfg_wrn] and cfg_wrn) or
     "strict"
 
-local project   = tgt_path:match("[^/\\]+$")
 local separator = "@"
 
 local src_path = tgt_path .. "/src"
@@ -112,7 +126,12 @@ local lib_list = txt_path .. "/lib.txt"
 local src_tail = language == "c++" and ".cpp" or ".c"
 local obj_tail = SYS_NAME == "WINDOWS" and ".obj" or ".o"
 local exe_tail = SYS_NAME == "WINDOWS" and ".exe" or ""
+local lib_tail = SYS_NAME == "WINDOWS" and ".lib" or ".a"
+local dll_tail = SYS_NAME == "WINDOWS" and ".dll" or (SYS_NAME == "LINUX" and ".so" or ".dylib")
 local exe_name = project .. exe_tail
+local lib_name = project .. "_static" .. lib_tail
+local imp_name = project .. lib_tail
+local dll_name = project .. dll_tail
 
 local splitter = SYS_NAME == "WINDOWS" and ";" or ":"
 local path_var = "PATH"
@@ -145,9 +164,10 @@ end
 
 local comp_flags = nil
 local link_flags = nil
+local arch_flags = nil
 if compiler == "msvc" then
     comp_flags = {
-        exe = "cl /nologo ",
+        exe = "cl /nologo /MD ",
         mod = '/c /EHsc /D"_WIN32_WINNT=0x0A00" ',
         std = "/std:" .. std_lang .. " ",
         inc = "/I ",
@@ -171,14 +191,19 @@ if compiler == "msvc" then
     }
 
     link_flags = {
-        exe = "link /nologo ",
+        exe = "link /nologo " .. (product == "dynamic" and "/DLL " or ""),
         mod = "/SUBSYSTEM:" .. (desktop and "WINDOWS " or "CONSOLE "),
+        out = "/OUT:",
+    }
+
+    arch_flags = {
+        exe = "lib /nologo ",
         out = "/OUT:",
     }
 
 elseif compiler == "gnu" then
     comp_flags = {
-        exe = "g" .. (language == "c++" and "++ " or "cc "),
+        exe = "g" .. (language == "c++" and "++ " or "cc ") .. (product == "dynamic" and "-fPIC " or ""),
         mod = '-c  ',
         std = "-std=" .. std_lang .. " ",
         inc = "-I ",
@@ -202,14 +227,19 @@ elseif compiler == "gnu" then
     }
 
     link_flags = {
-        exe = "g" .. (language == "c++" and "++ " or "cc "),
+        exe = "g" .. (language == "c++" and "++ " or "cc ") .. (product == "dynamic" and "-shared " or ""),
         mod = "",
+        out = "-o ",
+    }
+
+    arch_flags = {
+        exe = "ar rcs ",
         out = "-o ",
     }
 
 elseif compiler == "clang" then
     comp_flags = {
-        exe = "clang" .. (language == "c++" and "++ " or " "),
+        exe = "clang" .. (language == "c++" and "++ " or " ") .. (product == "dynamic" and "-fPIC " or ""),
         mod = '-c  ',
         std = "-std=" .. std_lang .. " ",
         inc = "-I ",
@@ -233,8 +263,13 @@ elseif compiler == "clang" then
     }
 
     link_flags = {
-        exe = "clang" .. (language == "c++" and "++ " or " "),
+        exe = "clang" .. (language == "c++" and "++ " or " ") .. (product == "dynamic" and "-shared " or ""),
         mod = "",
+        out = "-o ",
+    }
+
+    arch_flags = {
+        exe = "ar rcs ",
         out = "-o ",
     }
 
@@ -250,16 +285,19 @@ return {
     release  = release,
     optimal  = optimal,
     desktop  = desktop,
+    product  = product,
     warnings = warnings,
     compiler = compiler,
     language = language,
     standard = standard,
+    external = external,
 
     tgt_path = tgt_path,
     exp_path = exp_path,
 
     comp_flags = comp_flags,
     link_flags = link_flags,
+    arch_flags = arch_flags,
 
     separator = separator,
 
@@ -286,7 +324,13 @@ return {
 
     obj_tail = obj_tail,
     exe_tail = exe_tail,
+    lib_tail = lib_tail,
+    dll_tail = dll_tail,
+
     exe_name = exe_name,
+    lib_name = lib_name,
+    imp_name = imp_name,
+    dll_name = dll_name,
 
     splitter = splitter,
     path_var = path_var,
