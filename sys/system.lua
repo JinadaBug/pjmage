@@ -54,6 +54,7 @@ local cfg_lan = type(config.language) == "string" and config.language:lower() or
 local cfg_std = type(config.standard) == "string" and config.standard:lower() or "20"
 local cfg_wrn = type(config.warnings) == "string" and config.warnings:lower() or "strict"
 local cfg_exe = type(config.compiler) == "string" and config.compiler:lower() or basic_exe
+local cfg_def = config.defines
 
 local arg_gui = make_bool(ARGV.desktop)
 local arg_rel = make_bool(ARGV.release)
@@ -97,6 +98,7 @@ local desktop = pick(arg_gui, cfg_gui, false)
 local release = pick(arg_rel, cfg_rel, false)
 local optimal = pick(arg_opt, cfg_opt, false)
 local external = pick(arg_ext, false, false)
+local defines = cfg_def
 
 local warnings =
     (valid_wrn[arg_wrn] and arg_wrn) or
@@ -122,6 +124,7 @@ local txt_path = EXE_PATH .. "/out/txt/" .. project
 local inc_list = txt_path .. "/inc.txt"
 local obj_list = txt_path .. "/obj.txt"
 local lib_list = txt_path .. "/lib.txt"
+local def_list = txt_path .. "/def.txt"
 
 local src_tail = language == "c++" and ".cpp" or ".c"
 local obj_tail = SYS_NAME == "WINDOWS" and ".obj" or ".o"
@@ -171,6 +174,8 @@ if compiler == "msvc" then
         mod = '/c /EHsc /D"_WIN32_WINNT=0x0A00" ',
         std = "/std:" .. std_lang .. " ",
         inc = "/I ",
+        def = "/D",
+        und = "/U",
         out = "/Fo",
 
         wrn = {
@@ -207,6 +212,8 @@ elseif compiler == "gnu" then
         mod = '-c  ',
         std = "-std=" .. std_lang .. " ",
         inc = "-I ",
+        def = "-D",
+        und = "-U",
         out = "-o ",
 
         wrn = {
@@ -243,6 +250,8 @@ elseif compiler == "clang" then
         mod = '-c  ',
         std = "-std=" .. std_lang .. " ",
         inc = "-I ",
+        def = "-D",
+        und = "-U",
         out = "-o ",
 
         wrn = {
@@ -286,6 +295,7 @@ return {
     optimal  = optimal,
     desktop  = desktop,
     product  = product,
+    defines  = defines,
     warnings = warnings,
     compiler = compiler,
     language = language,
@@ -321,6 +331,8 @@ return {
 
     bin_path = bin_path,
     txt_path = txt_path,
+
+    def_list = def_list,
 
     obj_tail = obj_tail,
     exe_tail = exe_tail,

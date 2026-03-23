@@ -25,6 +25,11 @@ return {
     release  = ]] .. tostring(sys.release) .. [[,
     optimal  = ]] .. tostring(sys.optimal) .. [[,
     warnings = "]] .. sys.warnings .. [[", -- options: "none", "default", "strict"
+
+    -- Compiler Definitions
+    defines = {
+        -- usage: ["MACRO"] = true/false, true to define, false to undefine
+    }
 }]])
     file:close()
     print("[PJMage] Created .pjmage/config.lua")

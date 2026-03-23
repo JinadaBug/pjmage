@@ -11,6 +11,7 @@ line = line .. sys.comp_flags.rel[sys.release]
 line = line .. sys.comp_flags.opt[sys.optimal]
 line = line .. sys.comp_flags.wrn[sys.warnings]
 line = line .. '@"' .. sys.inc_list .. '" '
+line = line .. '@"' .. sys.def_list .. '" '
 line = line .. sys.comp_flags.inc .. ' "' .. sys.src_path .. '" '
 
 local commands = {}
@@ -39,6 +40,12 @@ for name, vers in pairs(sys.bricks) do
     end
 end
 
+local defines = {}
+for macro, switch in pairs(sys.defines) do
+    local flag = switch and sys.comp_flags.def or sys.comp_flags.und
+    table.insert(defines, flag .. '"' .. macro .. '"')
+end
+
 local file
 file = io.open(sys.inc_list, "w")
 if not file then error("[PJMage][Error] Include List Opening Failure") end
@@ -48,6 +55,11 @@ file:close()
 file = io.open(sys.obj_list, "w")
 if not file then error("[PJMage][Error] Object List Opening Failure") end
 file:write(table.concat(objects, "\n"))
+file:close()
+
+file = io.open(sys.def_list, "w")
+if not file then error("[PJMage][Error] Define List Opening Failure") end
+file:write(table.concat(defines, "\n"))
 file:close()
 
 if #commands > 0 then
