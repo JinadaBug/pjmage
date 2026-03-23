@@ -89,7 +89,7 @@ local valid = (language == "c++") and valid_cpp or valid_c
 local standard =
     (valid[arg_std] and arg_std) or
     (valid[cfg_std] and cfg_std) or
-    (language == "c++" and "20" or "18")
+    (language == "c++" and "20" or "17")
 
 local std_lang = language .. standard
 
