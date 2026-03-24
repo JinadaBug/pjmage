@@ -40,6 +40,11 @@ if file then
     file:write([[
 return {
     -- Project Dependencies
+    -- example:
+    -- zlib = {                 (Package name)
+    --     version = "1.3.2",   (Specify the package version)
+    --     dynamic = true,      (Use static linking or dynamic linking)
+    -- },
 }
 ]])
     file:close()

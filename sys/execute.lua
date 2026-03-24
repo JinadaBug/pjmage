@@ -2,10 +2,10 @@ local sys = require("system")
 
 if sys.product == "program" and not sys.external then
     local runtimes = { sys.bin_path }
-    for name, vers in pairs(sys.bricks) do
-        local data = sys.stored[name] and sys.stored[name][vers]
-        if data and data.dll then
-            table.insert(runtimes, sys.dll_path .. "/" .. name .. sys.separator .. vers)
+    for name, meta in pairs(sys.bricks) do
+        local data = sys.stored[name] and sys.stored[name][meta.version]
+        if meta.dynamic and data and data.dll then
+            table.insert(runtimes, sys.dll_path .. "/" .. name .. sys.separator .. meta.version)
         end
     end
 

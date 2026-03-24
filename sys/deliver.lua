@@ -15,10 +15,10 @@ elseif sys.product == "dynamic" then
     sys.copy_file(sys.bin_path .. "/" .. sys.dll_name, sys.exp_path .. "/" .. sys.dll_name)
 end
 
-for name, vers in pairs(sys.bricks) do
-    local data = sys.stored[name] and sys.stored[name][vers]
-    if data and data.dll then
-        sys.copy_file(sys.dll_path .. "/" .. name .. sys.separator .. vers .. "/" .. data.dll, sys.exp_path .. "/" .. data.dll)
+for name, meta in pairs(sys.bricks) do
+    local data = sys.stored[name] and sys.stored[name][meta.version]
+    if meta.dynamic and data and data.dll then
+        sys.copy_file(sys.dll_path .. "/" .. name .. sys.separator .. meta.version .. "/" .. data.dll, sys.exp_path .. "/" .. data.dll)
     end
 end
 

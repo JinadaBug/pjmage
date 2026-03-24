@@ -33,10 +33,10 @@ for _, src_file in ipairs(sources) do
 end
 
 local headers = {}
-for name, vers in pairs(sys.bricks) do
-    local data = sys.stored[name] and sys.stored[name][vers]
+for name, meta in pairs(sys.bricks) do
+    local data = sys.stored[name] and sys.stored[name][meta.version]
     if data and data.inc then
-        table.insert(headers, sys.comp_flags.inc .. '"' .. sys.inc_path .. "/" .. name .. sys.separator .. vers .. '"')
+        table.insert(headers, sys.comp_flags.inc .. '"' .. sys.inc_path .. "/" .. name .. sys.separator .. meta.version .. '"')
     end
 end
 

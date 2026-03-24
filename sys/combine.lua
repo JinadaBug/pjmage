@@ -24,10 +24,12 @@ elseif sys.product == "static" then
 end
 
 local libraries = {}
-for name, vers in pairs(sys.bricks) do
-    local data = sys.stored[name] and sys.stored[name][vers]
-    if data and data.lib then
-        table.insert(libraries, '"' .. sys.lib_path .. "/" .. name .. sys.separator .. vers .. "/" .. data.lib .. '"')
+for name, meta in pairs(sys.bricks) do
+    local data = sys.stored[name] and sys.stored[name][meta.version]
+    if data and data.lib and meta.dynamic then
+        table.insert(libraries, '"' .. sys.lib_path .. "/" .. name .. sys.separator .. meta.version .. "/" .. data.lib.dynamic .. '"')
+    elseif data and data.lib then
+        table.insert(libraries, '"' .. sys.lib_path .. "/" .. name .. sys.separator .. meta.version .. "/" .. data.lib.static .. '"')
     end
 end
 
