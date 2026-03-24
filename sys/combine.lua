@@ -26,10 +26,16 @@ end
 local libraries = {}
 for name, meta in pairs(sys.bricks) do
     local data = sys.stored[name] and sys.stored[name][meta.version]
-    if data and data.lib and meta.dynamic then
-        table.insert(libraries, '"' .. sys.lib_path .. "/" .. name .. sys.separator .. meta.version .. "/" .. data.lib.dynamic .. '"')
-    elseif data and data.lib then
-        table.insert(libraries, '"' .. sys.lib_path .. "/" .. name .. sys.separator .. meta.version .. "/" .. data.lib.static .. '"')
+    if data and data.lib then
+        if data.lib.dynamic and meta.dynamic then
+            table.insert(libraries, '"' .. sys.lib_path .. "/" .. name .. sys.separator .. meta.version .. "/" .. data.lib.dynamic .. '"')
+        elseif data.lib.static and not meta.dynamic then
+            table.insert(libraries, '"' .. sys.lib_path .. "/" .. name .. sys.separator .. meta.version .. "/" .. data.lib.static .. '"')
+        else
+            local requested = meta.dynamic and "Dynamic" or "Static"
+            local available = meta.dynamic and "Static" or "Dynamic"
+            error(string.format("[PJMage][Error] Combination Failure: %s %s Not Found... Use %s %s Instead", requested, name, available, name))
+        end
     end
 end
 

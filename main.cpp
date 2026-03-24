@@ -108,6 +108,7 @@ namespace Call
         catch (const std::exception& error)
         {
             std::cerr << "[PJMage][Error] Filesystem Error: " << error.what() << "\n";
+            lua_pushnil(L);
         }
 
         return 1; // Return the table (even if empty)
@@ -337,7 +338,7 @@ namespace System
 int main(int argc, char const** argv)
 {
     // Get System Paths
-    if (!System::Get_Paths()) return 1;
+    if (!System::Get_Paths()) return -1;
 
     // Open Core Config (Local Lua State)
     lua_State* L_init = luaL_newstate();
@@ -434,7 +435,7 @@ int main(int argc, char const** argv)
             catch (const fs::filesystem_error& error)
             {
                 std::cerr << "[PJMage][Error] Invalid Path: " << external.generic_string() << "\n";
-                return 1;
+                return -1;
             }
         }
 
@@ -452,10 +453,12 @@ int main(int argc, char const** argv)
         lua_setglobal(L, "ARGV");
 
         // Run the script
+        int result = 0;
         fs::path script = Path::Install / "sys" / Config::Scripts[command];
         if (luaL_dofile(L, script.generic_string().c_str()) != LUA_OK)
         {
             std::cerr << "[PJMage][Error] " << lua_tostring(L, -1) << "\n";
+            result = -1;
         }
 
         // Close Lua State
@@ -476,12 +479,12 @@ int main(int argc, char const** argv)
             catch (const fs::filesystem_error& error)
             {
                 std::cerr << "[PJMage][Error] Invalid Path: " << original.generic_string() << "\n";
-                return 1;
+                return -1;
             }
         }
 
         // Success
-        return 0;
+        return result;
     }
 
     // Unknown Command
